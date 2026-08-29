@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JM Subnetting Lab</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            color: #172033;
+        }
+
+        /* HEADER */
+
+        header {
+            background: linear-gradient(135deg, #8b0000, #c62828);
+            color: white;
+            padding: 24px 18px;
+        }
+
+        .header {
+            max-width: 1180px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* CONTAINER */
+
+        .container {
+            max-width: 1180px;
+            margin: 22px auto;
+            padding: 0 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr;
+            gap: 18px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* CONTROLS */
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        select,
+        button,
+        input {
+            font: inherit;
+            border-radius: 8px;
+            border: 1px solid #ccd3df;
+            padding: 10px;
+        }
+
+        select {
+            background: white;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #c62828;
+            color: white;
+        }
+
+        .secondary {
+            background: #e9edf3;
+            color: #172033;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        /* STATS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .stat {
+            background: #f6f8fb;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat b {
+            display: block;
+            font-size: 22px;
+            margin-top: 5px;
+        }
+
+        /* QUESTION */
+
+        .question {
+            background: #fafafa;
+            border-left: 5px solid #c62828;
+            padding: 15px;
+            border-radius: 9px;
+            line-height: 1.6;
+        }
+
+        /* ANSWERS */
+
+        .fields {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .field input {
+            width: 100%;
+        }
+
+        /* FEEDBACK */
+
+        .feedback {
+            margin-top: 15px;
+            padding: 14px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .good {
+            background: #e7f6ec;
+            color: #146c2e;
+        }
+
+        .bad {
+            background: #fff0f0;
+            color: #a31d1d;
+        }
+
+        /* TABLE */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            border: 1px solid #dce1e8;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background: #283445;
+            color: white;
+        }
+
+        /* EXPLANATION */
+
+        .step {
+            padding: 12px;
+            border-bottom: 1px solid #e4e7ec;
+            line-height: 1.6;
+        }
+
+        .step:last-child {
+            border: none;
+        }
+
+        .bits {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .bit {
+            background: #eef1f5;
+            padding: 7px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .vlsmRow {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr;
+            gap: 8px;
+            margin: 8px 0;
+        }
+
+        .small {
+            font-size: 13px;
+            color: #647084;
+        }
+
+        .timer {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width:850px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .fields {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+
+        <div class="header">
+
+            <div>
+                <h1>🌐 JM Subnetting Lab</h1>
+            </div>
+
+            <div class="badge">
+                Mode hors ligne
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <div class="container">
+
+        <!-- PARAMÈTRES -->
+
+        <div class="card">
+
+            <div class="controls">
+
+                <select id="level">
+
+                    <option value="easy">
+                        Débutant
+                    </option>
+
+                    <option value="medium">
+                        Intermédiaire
+                    </option>
+
+                    <option value="hard" selected>
+                        Avancé
+                    </option>
+
+                    <option value="expert">
+                        Expert
+                    </option>
+
+                </select>
+
+
+                <select id="type">
+
+                    <option value="mixed">
+                        Exercices mixtes
+                    </option>
+
+                    <option value="network">
+                        Network / Broadcast
+                    </option>
+
+                    <option value="host">
+                        Adresse IP → sous-réseau
+                    </option>
+
+                    <option value="cidr">
+                        CIDR / Masque
+                    </option>
+
+                    <option value="vlsm">
+                        VLSM
+                    </option>
+
+                </select>
+
+
+                <button class="primary" onclick="newExercise()">
+
+                    🔄 Nouvel exercice
+
+                </button>
+
+
+                <button class="secondary" onclick="showSolution()">
+
+                    💡 Voir la solution
+
+                </button>
+
+            </div>
+
+
+            <!-- STATISTIQUES -->
+
+            <div class="stats">
+
+                <div class="stat">
+                    <span>Score</span>
+                    <b id="score">0</b>
+                </div>
+
+                <div class="stat">
+                    <span>Questions</span>
+                    <b id="count">0</b>
+                </div>
+
+                <div class="stat">
+                    <span>Précision</span>
+                    <b id="accuracy">0%</b>
+                </div>
+
+                <div class="stat">
+                    <span>Temps</span>
+                    <b class="timer" id="timer">
+                        00:00
+                    </b>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="grid">
+
+
+            <!-- EXERCICE -->
+
+            <div class="card">
+
+                <h2>
+                    📝 Exercice
+                </h2>
+
+
+                <div id="question" class="question">
+                </div>
+
+
+                <div id="answerArea">
+                </div>
+
+
+                <div class="controls" style="margin-top:15px">
+
+                    <button class="primary" onclick="check()">
+
+                        ✅ Corriger
+
+                    </button>
+
+
+                    <button class="secondary" onclick="resetAnswers()">
+
+                        ↺ Effacer
+
+                    </button>
+
+                </div>
+
+
+                <div id="feedback" class="feedback">
+                </div>
+
+            </div>
+
+
+            <!-- CORRECTION -->
+
+            <div class="card">
+
+                <h2>
+                    📚 Correction détaillée
+                </h2>
+
+
+                <div id="solution">
+
+                    <p class="small">
+
+                        La correction apparaîtra après validation ou en cliquant sur
+                        « Voir la solution ».
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* =====================================================
+           VARIABLES
+        ===================================================== */
+
+        let ex = null;
+
+        let score = 0;
+
+        let count = 0;
+
+        let correctCount = 0;
+
+        let start = Date.now();
+
+        let timerInt;
+
+
+        /* =====================================================
+           VALEURS DES BITS
+        ===================================================== */
+
+        const bitValues = [
+            128,
+            64,
+            32,
+            16,
+            8,
+            4,
+            2,
+            1
+        ];
+
+
+        /* =====================================================
+           FONCTIONS IP
+        ===================================================== */
+
+        function ipToInt(ip) {
+
+            return ip
+                .split('.')
+                .reduce(
+                    (a, x) => (a << 8) + (+x),
+                    0
+                ) >>> 0;
+
+        }
+
+
+        function intToIp(n) {
+
+            return [
+                (n >>> 24) & 255,
+                (n >>> 16) & 255,
+                (n >>> 8) & 255,
+                n & 255
+            ].join('.');
+
+        }
+
+
+        function maskInt(prefix) {
+
+            if (prefix === 0)
+                return 0;
+
+            return (0xffffffff << (32 - prefix)) >>> 0;
+
+        }
+
+
+        function maskIp(prefix) {
+
+            return intToIp(
+                maskInt(prefix)
+            );
+
+        }
+
+
+        function network(ip, prefix) {
+
+            return (
+                ipToInt(ip) &
+                maskInt(prefix)
+            ) >>> 0;
+
+        }
+
+
+        function broadcast(ip, prefix) {
+
+            return (
+                network(ip, prefix) |
+                (~maskInt(prefix))
+            ) >>> 0;
+
+        }
+
+
+        function hosts(prefix) {
+
+            if (prefix === 31)
+                return 0;
+
+            if (prefix === 32)
+                return 1;
+
+            return 2 ** (32 - prefix) - 2;
+
+        }
+
+
+        function block(prefix) {
+
+            let parts = maskIp(prefix).split('.');
+
+            let index = parts.findIndex(
+                x => x !== '255'
+            );
+
+            if (index < 0)
+                return 1;
+
+            return 256 - Number(parts[index]);
+
+        }
+
+
+        function firstHost(net, prefix) {
+
+            if (prefix >= 31)
+                return net;
+
+            return net + 1;
+
+        }
+
+
+        function lastHost(bcast, prefix) {
+
+            if (prefix >= 31)
+                return bcast;
+
+            return bcast - 1;
+
+        }
+
+
+        function randomInt(min, max) {
+
+            return Math.floor(
+                Math.random() *
+                (max - min + 1)
+            ) + min;
+
+        }
+
+
+        /* =====================================================
+           GÉNÉRATION IP
+        ===================================================== */
+
+        function randomIP() {
+
+            return `${randomInt(10, 220)}.${randomInt(0, 255)}.${randomInt(0, 255)}.${randomInt(1, 254)}`;
+
+        }
+
+
+        /* =====================================================
+           NOUVEL EXERCICE
+        ===================================================== */
+
+        function makeExercise() {
+
+            const level =
+                document.getElementById("level").value;
+
+            const type =
+                document.getElementById("type").value;
+
+
+            let min = 24;
+
+            let max = 30;
+
+
+            if (level === "easy") {
+
+                min = 24;
+                max = 26;
+
+            }
+
+
+            if (level === "medium") {
+
+                min = 24;
+                max = 28;
+
+            }
+
+
+            if (level === "hard") {
+
+                min = 20;
+                max = 30;
+
+            }
+
+
+            if (level === "expert") {
+
+                min = 16;
+                max = 30;
+
+            }
+
+
+            let selectedType = type;
+
+
+            if (type === "mixed") {
+
+                const types = [
+                    "network",
+                    "host",
+                    "cidr",
+                    "vlsm"
+                ];
+
+                selectedType =
+                    types[
+                    randomInt(
+                        0,
+                        types.length - 1
+                    )
+                    ];
+
+            }
+
+
+            /* NETWORK */
+
+            if (selectedType === "network") {
+
+                let prefix =
+                    randomInt(min, max);
+
+                let ip =
+                    randomIP();
+
+                let net =
+                    network(ip, prefix);
+
+                let bcast =
+                    broadcast(ip, prefix);
+
+
+                ex = {
+
+                    kind: "network",
+
+                    ip: ip,
+
+                    p: prefix,
+
+                    net: net,
+
+                    bcast: bcast
+
+                };
+
+
+                question.innerHTML = `
+
+        À partir de
+
+        <b>${ip}/${prefix}</b>
+
+        trouvez :
+
+        <br><br>
+
+        • Network ID<br>
+        • Broadcast<br>
+        • First Host<br>
+        • Last Host<br>
+        • Nombre d'hôtes utilisables
+
+        `;
+
+
+                renderFields([
+                    "network",
+                    "broadcast",
+                    "first",
+                    "last",
+                    "hosts"
+                ]);
+
+            }
+
+
+            /* HOST */
+
+            else if (selectedType === "host") {
+
+                let prefix =
+                    randomInt(min, max);
+
+                let ip =
+                    randomIP();
+
+                let net =
+                    network(ip, prefix);
+
+                let bcast =
+                    broadcast(ip, prefix);
+
+
+                ex = {
+
+                    kind: "host",
+
+                    ip: ip,
+
+                    p: prefix,
+
+                    net: net,
+
+                    bcast: bcast
+
+                };
+
+
+                question.innerHTML = `
+
+        L'adresse
+
+        <b>${ip}/${prefix}</b>
+
+        appartient à quel sous-réseau ?
+
+        <br><br>
+
+        Trouvez :
+
+        <br>
+
+        • Network ID<br>
+        • Broadcast<br>
+        • First Host<br>
+        • Last Host<br>
+        • Type de l'adresse donnée
+
+        `;
+
+
+                renderFields([
+                    "network",
+                    "broadcast",
+                    "first",
+                    "last",
+                    "type"
+                ]);
+
+            }
+
+
+            /* CIDR */
+
+            else if (selectedType === "cidr") {
+
+                let original =
+                    randomInt(20, 24);
+
+                let target =
+                    randomInt(
+                        original + 1,
+                        30
+                    );
+
+
+                let base =
+                    randomIP();
+
+
+                let net =
+                    network(
+                        base,
+                        original
+                    );
+
+
+                ex = {
+
+                    kind: "cidr",
+
+                    base: intToIp(net),
+
+                    p: original,
+
+                    target: target,
+
+                    mask: maskIp(target),
+
+                    hosts: hosts(target),
+
+                    block: block(target),
+
+                    subnets:
+                        2 ** (target - original)
+
+                };
+
+
+                question.innerHTML = `
+
+        Vous disposez du réseau
+
+        <b>${ex.base}/${original}</b>.
+
+        <br><br>
+
+        Vous devez créer
+
+        <b>${ex.subnets} sous-réseaux</b>.
+
+        <br><br>
+
+        Déterminez :
+
+        <br>
+
+        • Nouveau préfixe<br>
+        • Masque<br>
+        • Nombre d'hôtes utilisables<br>
+        • Taille du bloc
+
+        `;
+
+
+                renderFields([
+                    "cidr",
+                    "mask",
+                    "hosts",
+                    "block"
+                ]);
+
+            }
+
+
+            /* VLSM */
+
+            else {
+
+                makeVLSM(level);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           VLSM
+        ===================================================== */
+
+        function makeVLSM(level) {
+
+            let prefix =
+                level === "expert"
+                    ? 16
+                    : 24;
+
+
+            let base;
+
+
+            if (prefix === 24) {
+
+                base =
+                    `192.168.${randomInt(1, 220)}.0`;
+
+            }
+
+            else {
+
+                base =
+                    `10.${randomInt(0, 20)}.0.0`;
+
+            }
+
+
+            let requirements;
+
+
+            if (level === "expert") {
+
+                requirements =
+                    [1200, 500, 200, 90, 40];
+
+            }
+
+            else {
+
+                requirements =
+                    [60, 28, 12, 6];
+
+            }
+
+
+            ex = {
+
+                kind: "vlsm",
+
+                base: base,
+
+                p: prefix,
+
+                req: requirements
+
+            };
+
+
+            question.innerHTML = `
+
+    Réseau de départ :
+
+    <b>${base}/${prefix}</b>
+
+    <br><br>
+
+    Faites un exercice VLSM pour les besoins :
+
+    <br><br>
+
+    <b>
+
+    ${requirements.join(" hôtes, ")}
+    hôtes
+
+    </b>
+
+    <br><br>
+
+    Pour chaque réseau, trouvez :
+
+    <br>
+
+    • Préfixe<br>
+    • Network ID<br>
+    • Broadcast
+
+    `;
+
+
+            document.getElementById(
+                "answerArea"
+            ).innerHTML =
+
+                '<div id="vlsmInputs"></div>';
+
+
+            let container =
+                document.getElementById(
+                    "vlsmInputs"
+                );
+
+
+            requirements.forEach(
+                (req, i) => {
+
+                    container.innerHTML += `
+
+            <div class="vlsmRow">
+
+                <input
+                id="v_p_${i}"
+                placeholder="Préfixe /xx">
+
+                <input
+                id="v_n_${i}"
+                placeholder="Network ID">
+
+                <input
+                id="v_b_${i}"
+                placeholder="Broadcast">
+
+            </div>
+
+            `;
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           CHAMPS
+        ===================================================== */
+
+        function renderFields(fields) {
+
+            const labels = {
+
+                network:
+                    "Network ID",
+
+                broadcast:
+                    "Broadcast",
+
+                first:
+                    "First Host",
+
+                last:
+                    "Last Host",
+
+                hosts:
+                    "Hôtes utilisables",
+
+                cidr:
+                    "Nouveau CIDR",
+
+                mask:
+                    "Masque",
+
+                block:
+                    "Taille du bloc",
+
+                type:
+                    "Type de l'adresse"
+
+            };
+
+
+            document.getElementById(
+                "answerArea"
+            ).innerHTML =
+
+                '<div class="fields">' +
+
+                fields.map(
+
+                    field => `
+
+        <div class="field">
+
+            <label>
+            ${labels[field]}
+            </label>
+
+            <input
+            id="a_${field}"
+            placeholder="${field === "cidr"
+                            ? "/27"
+                            : ""
+                        }">
+
+        </div>
+
+        `
+
+                ).join('') +
+
+                '</div>';
+
+        }
+
+
+        /* =====================================================
+           CALCUL VLSM
+        ===================================================== */
+
+        function vlsmCalc() {
+
+            let cursor =
+                ipToInt(ex.base);
+
+
+            let rows = [];
+
+
+            let sorted =
+                ex.req
+                    .map(
+                        (r, i) => ({
+                            r: r,
+                            i: i
+                        })
+                    )
+                    .sort(
+                        (a, b) =>
+                            b.r - a.r
+                    );
+
+
+            for (
+                const item
+                of sorted
+            ) {
+
+                let hostBits =
+                    Math.ceil(
+                        Math.log2(
+                            item.r + 2
+                        )
+                    );
+
+
+                let prefix =
+                    32 - hostBits;
+
+
+                let size =
+                    2 ** hostBits;
+
+
+                cursor =
+                    Math.ceil(
+                        cursor / size
+                    ) * size;
+
+
+                rows.push({
+
+                    i: item.i,
+
+                    prefix: prefix,
+
+                    network: cursor,
+
+                    broadcast:
+                        cursor + size - 1,
+
+                    hosts:
+                        hosts(prefix)
+
+                });
+
+
+                cursor += size;
+
+            }
+
+
+            return rows.sort(
+                (a, b) =>
+                    a.i - b.i
+            );
+
+        }
+
+
+        /* =====================================================
+           CORRECTION VLSM
+        ===================================================== */
+
+        function vlsmSolution() {
+
+            let rows =
+                vlsmCalc();
+
+
+            return `
+
+    <table>
+
+    <tr>
+
+    <th>Besoin</th>
+
+    <th>Préfixe</th>
+
+    <th>Network</th>
+
+    <th>Broadcast</th>
+
+    <th>Hôtes</th>
+
+    </tr>
+
+    ${rows.map(
+                (r, i) => `
+
+            <tr>
+
+            <td>
+            ${ex.req[i]}
+            </td>
+
+            <td>
+            /${r.prefix}
+            </td>
+
+            <td>
+            ${intToIp(r.network)}
+            </td>
+
+            <td>
+            ${intToIp(r.broadcast)}
+            </td>
+
+            <td>
+            ${r.hosts}
+            </td>
+
+            </tr>
+
+            `
+            ).join('')
+                }
+
+    </table>
+
+    <p class="small">
+
+    Méthode VLSM :
+
+    trier les besoins du plus grand au plus petit,
+    déterminer les bits hôtes nécessaires,
+    puis attribuer les blocs successivement.
+
+    </p>
+
+    `;
+
+        }
+
+
+        /* =====================================================
+           SOLUTION
+        ===================================================== */
+
+        function solutionHTML() {
+
+            if (!ex)
+                return "";
+
+
+            if (ex.kind === "vlsm")
+                return vlsmSolution();
+
+
+            if (ex.kind === "cidr") {
+
+                let m =
+                    ex.target;
+
+
+                let mask =
+                    maskIp(m);
+
+
+                let value =
+                    mask
+                        .split('.')
+                        .find(
+                            x => x !== '255'
+                        );
+
+
+                return `
+
+        <div class="step">
+
+        <b>1. Bits empruntés :</b>
+
+        ${m} - ${ex.p}
+
+        = ${m - ex.p}
+
+        </div>
+
+
+        <div class="step">
+
+        <b>2. Sous-réseaux :</b>
+
+        2<sup>${m - ex.p}</sup>
+
+        = ${ex.subnets}
+
+        </div>
+
+
+        <div class="step">
+
+        <b>3. Masque :</b>
+
+        ${mask}
+
+        </div>
+
+
+        <div class="step">
+
+        <b>4. Hôtes :</b>
+
+        2<sup>${32 - m}</sup>
+
+        − 2
+
+        = <b>${ex.hosts}</b>
+
+        </div>
+
+
+        <div class="step">
+
+        <b>5. Taille du bloc :</b>
+
+        256 − ${value}
+
+        = <b>${ex.block}</b>
+
+        </div>
+
+
+        <div class="step">
+
+        <b>
+
+        Valeurs des bits d'un octet :
+
+        </b>
+
+        <div class="bits">
+
+        ${bitValues.map(
+                    v =>
+                        `<span class="bit">
+                ${v}
+                </span>`
+                ).join('')
+                    }
+
+        </div>
+
+        </div>
+
+        `;
+
+            }
+
+
+            let p = ex.p;
+
+            let net = ex.net;
+
+            let bcast = ex.bcast;
+
+
+            let mask =
+                maskIp(p);
+
+
+            let interesting =
+                mask
+                    .split('.')
+                    .findIndex(
+                        x => x !== '255'
+                    );
+
+
+            let maskValue =
+                interesting >= 0
+                    ? Number(
+                        mask.split('.')[interesting]
+                    )
+                    : 255;
+
+
+            return `
+
+    <div class="step">
+
+    <b>Préfixe :</b>
+
+    /${p}
+
+    </div>
+
+
+    <div class="step">
+
+    <b>Masque :</b>
+
+    ${mask}
+
+    </div>
+
+
+    <div class="step">
+
+    <b>Octet intéressant :</b>
+
+    ${interesting + 1}e octet
+
+    </div>
+
+
+    <div class="step">
+
+    <b>Taille du bloc :</b>
+
+    256 − ${maskValue}
+
+    = <b>${block(p)}</b>
+
+    </div>
+
+
+    <div class="step">
+
+    <b>Network ID :</b>
+
+    <b>
+    ${intToIp(net)}
+    </b>
+
+    </div>
+
+
+    <div class="step">
+
+    <b>First Host :</b>
+
+    ${intToIp(
+                firstHost(net, p)
+            )}
+
+    </div>
+
+
+    <div class="step">
+
+    <b>Last Host :</b>
+
+    ${intToIp(
+                lastHost(bcast, p)
+            )}
+
+    </div>
+
+
+    <div class="step">
+
+    <b>Broadcast :</b>
+
+    ${intToIp(bcast)}
+
+    </div>
+
+
+    <div class="step">
+
+    <b>Hôtes utilisables :</b>
+
+    ${hosts(p)}
+
+    </div>
+
+
+    <div class="step">
+
+    <b>Valeurs des bits :</b>
+
+    <div class="bits">
+
+    ${bitValues.map(
+                v =>
+                    `<span class="bit">
+            ${v}
+            </span>`
+            ).join('')
+                }
+
+    </div>
+
+    </div>
+
+    `;
+
+        }
+
+
+        /* =====================================================
+           CORRECTION
+        ===================================================== */
+
+        function check() {
+
+            if (!ex)
+                return;
+
+
+            let correct = 0;
+
+
+            let total =
+                ex.kind === "vlsm"
+                    ? ex.req.length * 3
+                    : 5;
+
+
+            if (ex.kind === "vlsm") {
+
+                let solution =
+                    vlsmCalc();
+
+
+                solution.forEach(
+                    (row, i) => {
+
+                        let p =
+                            document.getElementById(
+                                `v_p_${i}`
+                            ).value
+                                .trim()
+                                .replace('/', '');
+
+
+                        let n =
+                            document.getElementById(
+                                `v_n_${i}`
+                            ).value
+                                .trim();
+
+
+                        let b =
+                            document.getElementById(
+                                `v_b_${i}`
+                            ).value
+                                .trim();
+
+
+                        if (
+                            Number(p) ===
+                            row.prefix
+                        )
+                            correct++;
+
+
+                        if (
+                            n ===
+                            intToIp(
+                                row.network
+                            )
+                        )
+                            correct++;
+
+
+                        if (
+                            b ===
+                            intToIp(
+                                row.broadcast
+                            )
+                        )
+                            correct++;
+
+                    }
+                );
+
+            }
+
+
+            else {
+
+                let answers = {};
+
+
+                if (
+                    ex.kind === "network"
+                ) {
+
+                    answers = {
+
+                        network:
+                            intToIp(ex.net),
+
+                        broadcast:
+                            intToIp(ex.bcast),
+
+                        first:
+                            intToIp(
+                                firstHost(
+                                    ex.net,
+                                    ex.p
+                                )
+                            ),
+
+                        last:
+                            intToIp(
+                                lastHost(
+                                    ex.bcast,
+                                    ex.p
+                                )
+                            ),
+
+                        hosts:
+                            String(
+                                hosts(ex.p)
+                            )
+
+                    };
+
+                }
+
+
+                if (
+                    ex.kind === "host"
+                ) {
+
+                    let type =
+                        ex.ip ===
+                            intToIp(ex.net)
+
+                            ? "Network ID"
+
+                            : ex.ip ===
+                                intToIp(ex.bcast)
+
+                                ? "Broadcast"
+
+                                : "Hôte";
+
+
+                    answers = {
+
+                        network:
+                            intToIp(ex.net),
+
+                        broadcast:
+                            intToIp(ex.bcast),
+
+                        first:
+                            intToIp(
+                                firstHost(
+                                    ex.net,
+                                    ex.p
+                                )
+                            ),
+
+                        last:
+                            intToIp(
+                                lastHost(
+                                    ex.bcast,
+                                    ex.p
+                                )
+                            ),
+
+                        type: type
+
+                    };
+
+                }
+
+
+                if (
+                    ex.kind === "cidr"
+                ) {
+
+                    answers = {
+
+                        cidr:
+                            "/" + ex.target,
+
+                        mask:
+                            ex.mask,
+
+                        hosts:
+                            String(ex.hosts),
+
+                        block:
+                            String(ex.block)
+
+                    };
+
+                }
+
+
+                Object.keys(answers)
+                    .forEach(
+                        key => {
+
+                            let value =
+                                document.getElementById(
+                                    "a_" + key
+                                ).value.trim();
+
+
+                            if (
+                                value ===
+                                answers[key]
+                            )
+                                correct++;
+
+                        }
+                    );
+
+            }
+
+
+            count++;
+
+            score += correct;
+
+
+            if (
+                correct === total
+            )
+                correctCount++;
+
+
+            document.getElementById(
+                "score"
+            ).textContent = score;
+
+
+            document.getElementById(
+                "count"
+            ).textContent = count;
+
+
+            document.getElementById(
+                "accuracy"
+            ).textContent =
+                Math.round(
+                    correctCount /
+                    count *
+                    100
+                ) + "%";
+
+
+            feedback.style.display =
+                "block";
+
+
+            if (
+                correct === total
+            ) {
+
+                feedback.className =
+                    "feedback good";
+
+
+                feedback.innerHTML = `
+
+        🎉 <b>Excellent !</b>
+
+        Toutes vos réponses sont correctes.
+
+        <br>
+
+        Résultat :
+
+        <b>${correct}/${total}</b>
+
+        `;
+
+            }
+
+            else {
+
+                feedback.className =
+                    "feedback bad";
+
+
+                feedback.innerHTML = `
+
+        📊 Résultat :
+
+        <b>${correct}/${total}</b>
+
+        <br>
+
+        Consultez la correction détaillée.
+
+        `;
+
+            }
+
+
+            solution.innerHTML =
+                solutionHTML();
+
+        }
+
+
+        /* =====================================================
+           AUTRES FONCTIONS
+        ===================================================== */
+
+        function showSolution() {
+
+            if (ex)
+                solution.innerHTML =
+                    solutionHTML();
+
+        }
+
+
+        function resetAnswers() {
+
+            document
+                .querySelectorAll(
+                    "#answerArea input"
+                )
+                .forEach(
+                    input =>
+                        input.value = ""
+                );
+
+
+            feedback.style.display =
+                "none";
+
+        }
+
+
+        function newExercise() {
+
+            feedback.style.display =
+                "none";
+
+
+            solution.innerHTML = `
+
+    <p class="small">
+
+    La correction apparaîtra après validation.
+
+    </p>
+
+    `;
+
+
+            makeExercise();
+
+
+            start =
+                Date.now();
+
+        }
+
+
+        /* =====================================================
+           TIMER
+        ===================================================== */
+
+        function tick() {
+
+            let seconds =
+                Math.floor(
+                    (Date.now() - start) /
+                    1000
+                );
+
+
+            let minutes =
+                Math.floor(
+                    seconds / 60
+                );
+
+
+            let remaining =
+                seconds % 60;
+
+
+            timer.textContent =
+
+                String(minutes)
+                    .padStart(2, "0")
+
+                + ":" +
+
+                String(remaining)
+                    .padStart(2, "0");
+
+        }
+
+
+        timerInt =
+            setInterval(
+                tick,
+                1000
+            );
+
+
+        /* =====================================================
+           PREMIER EXERCICE
+        ===================================================== */
+
+        newExercise();
+
+    </script>
+
+</body>
+
+</html>
